@@ -41,7 +41,7 @@ class ExcaRobo(gym.Env):
         self.orientation_target = -2.073
         # self.idx_target = 0
         # self.n_target = len(self.orientation_targets)
-        self.observation_space = spaces.Box(low =-np.inf, high = np.inf, shape= (14,), dtype=np.float32)
+        self.observation_space = spaces.Box(low =-np.inf, high = np.inf, shape= (11,), dtype=np.float32)
         self.action_space = spaces.Box(low = -0.3, high = 0.3, shape=(3,), dtype=np.float32)
         self.steps_left = np.copy(self.MAX_EPISODE)
         
@@ -75,7 +75,7 @@ class ExcaRobo(gym.Env):
         # desired_linear_velocity = -5*vec
 
         reward_dist = np.exp(-np.linalg.norm(vec))
-        reward_orientation = np.exp(-orientation_error**2)
+        reward_orientation = -0.0075*(orientation_error)**2
         reward_ctrl = 0
 
         reward = reward_dist + reward_ctrl + reward_orientation
@@ -176,8 +176,7 @@ class ExcaRobo(gym.Env):
     def _get_obs(self, error, orientation_error):
         return np.concatenate(
             [
-                np.cos(self.theta_now),
-                np.sin(self.theta_now),
+                self.theta_now,
                 error,
                 self.position_now,
                 [self.orientation_now, orientation_error]

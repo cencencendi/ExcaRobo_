@@ -44,7 +44,7 @@ class ExcaRobo(gym.Env):
 
         vec = np.array(linkWorldPosition) - self.position_target
 
-        reward_dist = 1/(1+(vec**2).sum())
+        reward_dist = np.exp(-np.linalg.norm(vec))
         reward_ctrl = 0
 
         reward = reward_dist + reward_ctrl

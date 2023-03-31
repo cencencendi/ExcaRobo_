@@ -41,7 +41,7 @@ class ExcaRobo(gym.Env):
         self.orientation_target = -2.073
         # self.idx_target = 0
         # self.n_target = len(self.orientation_targets)
-        self.observation_space = spaces.Box(low =-np.inf, high = np.inf, shape= (14,), dtype=np.float32)
+        self.observation_space = spaces.Box(low =-np.inf, high = np.inf, shape= (22,), dtype=np.float32)
         self.action_space = spaces.Box(low = -0.3, high = 0.3, shape=(3,), dtype=np.float32)
         self.steps_left = np.copy(self.MAX_EPISODE)
         
@@ -64,22 +64,24 @@ class ExcaRobo(gym.Env):
         orientation_error = self.rotmat2theta(
             self.rot_mat(self.orientation_target)@self.rot_mat(self.orientation_now).T
         )
-        # desired_orientation_velocity = 5*orientation_error
+        desired_orientation_velocity = 5*orientation_error
 
-        # self.orientation_velocity = (self.orientation_now-self.orientation_last)/self.dt
+        self.orientation_velocity = (self.orientation_now-self.orientation_last)/self.dt
 
         #Position error
         self.position_now, self.link_velocity = self._get_link_state()
 
         vec = np.array(self.position_now) - self.position_target
-        # desired_linear_velocity = -5*vec
+        desired_linear_velocity = -5*vec
 
-        reward_dist = np.exp(-np.linalg.norm(vec))
-        reward_orientation = np.exp(-orientation_error**2)
-        reward_ctrl = 0
+        reward_dist = 4*np.exp(-np.linalg.norm(desired_linear_velocity-self.link_velocity))
+        reward_orientation = -np.exp((desired_orientation_velocity-self.orientation_velocity)**2)
+        reward_ctrl = -0.0075*np.linalg.norm(action)
 
         reward = reward_dist + reward_ctrl + reward_orientation
-        self.new_obs = self._get_obs(error = vec, 
+        self.new_obs = self._get_obs(desired_orientation_velocity = desired_orientation_velocity, 
+                                     desired_linear_velocity = desired_linear_velocity, 
+                                     error = vec, 
                                      orientation_error = orientation_error)
 
         if np.any(self.theta_now > np.array(self.max_theta)) or np.any(self.theta_now < np.array(self.min_theta)):
@@ -147,9 +149,9 @@ class ExcaRobo(gym.Env):
 
         #Get Joint State
         self.theta_now, self.theta_dot_now = self._get_joint_state()
-        # self.orientation_last = self.normalize(-sum(self.theta_now))
+        self.orientation_last = self.normalize(-sum(self.theta_now))
         self.orientation_now = self.normalize(-sum(self.theta_now))
-        # self.orientation_velocity = (self.orientation_now-self.orientation_last)/self.dt
+        self.orientation_velocity = (self.orientation_now-self.orientation_last)/self.dt
 
         #Get Link State
         self.position_now, self.link_velocity = self._get_link_state()
@@ -157,7 +159,9 @@ class ExcaRobo(gym.Env):
         self.steps_left = np.copy(self.MAX_EPISODE)
         self.last_act = np.array([0,0,0])
         self.cur_done = False
-        self.new_obs = self._get_obs(error = np.array([0,0,0]), 
+        self.new_obs = self._get_obs(desired_orientation_velocity = 0, 
+                                     desired_linear_velocity = np.array([0,0,0]), 
+                                     error = np.array([0,0,0]), 
                                      orientation_error = 0)
         return self.new_obs
 
@@ -173,14 +177,16 @@ class ExcaRobo(gym.Env):
     def normalize(self, x):
         return ((x+np.pi)%(2*np.pi)) - np.pi
 
-    def _get_obs(self, error, orientation_error):
+    def _get_obs(self, desired_orientation_velocity, desired_linear_velocity, error, orientation_error):
         return np.concatenate(
             [
-                np.cos(self.theta_now),
-                np.sin(self.theta_now),
+                self.theta_now,
+                self.theta_dot_now,
+                desired_linear_velocity,
                 error,
                 self.position_now,
-                [self.orientation_now, orientation_error]
+                self.link_velocity,
+                [self.orientation_now, self.orientation_velocity, desired_orientation_velocity, orientation_error]
             ]
         )
 

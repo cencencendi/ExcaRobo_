@@ -1,6 +1,6 @@
 import os
 
-from position_orientation import ExcaRobo
+from position_orientation2 import ExcaRobo
 from stable_baselines3 import PPO
 
 SIM_ON = 0
@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     log_path = os.path.join('Training', 'Logs', 'Position_orientation')
     model = PPO('MlpPolicy', env, verbose=1, tensorboard_log=log_path)
-    model.learn(total_timesteps=2_500_000, tb_log_name="rew: exp3_obsspace: (11,)", log_interval=1)
+    model.learn(total_timesteps=2_500_000, tb_log_name="rew: exp2_obsspace: (11,)", log_interval=1)
 
-    model_save_path = os.path.join('Training', 'Saved Models', 'Position_orientation', 'rew: exp3_obsspace: (11,)')
+    model_save_path = os.path.join('Training', 'Saved Models', 'Position_orientation', 'rew: exp2_obsspace: (11,)')
     model.save(model_save_path)
