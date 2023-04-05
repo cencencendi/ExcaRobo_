@@ -34,19 +34,27 @@ def normalize(x):
 
 # for pose in pose_target:
 #     print(pose)
-pose = pose_target[-1]
-# for i in range(5000):
-#     p.setJointMotorControl2(boxId, 1 , p.POSITION_CONTROL, targetPosition = np.pi/2, force=10000)
-#     p.setJointMotorControl2(boxId, 2 , p.POSITION_CONTROL, targetPosition = pose[0], force= 250_000)
-#     p.setJointMotorControl2(boxId, 3 , p.POSITION_CONTROL, targetPosition = pose[1], force= 250_000)
-#     p.setJointMotorControl2(boxId, 4 , p.POSITION_CONTROL, targetPosition = pose[2], force= 250_000)
-#     (linkWorldPosition, orientation, *_) = p.getLinkState(boxId,4, computeLinkVelocity=1, computeForwardKinematics=1)
-#     # print(linkWorldPosition)    
-#     p.stepSimulation()
-#     time.sleep(1.0/240.)
+last_ori = 0
+for i in range(5000):
+    p.setJointMotorControl2(boxId, 1 , p.VELOCITY_CONTROL, targetVelocity = 0, force=10000)
+    p.setJointMotorControl2(boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = -0.3, force= 250_000)
+    p.setJointMotorControl2(boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = -0.3, force= 250_000)
+    p.setJointMotorControl2(boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = -0.3, force= 250_000)
+    (linkWorldPosition,
+            linkWorldOrientation,
+            localInertialFramePosition,
+            localInertialFrameOrientation,
+            worldLinkFramePosition,
+            worldLinkFrameOrientation,
+            worldLinkLinearVelocity,
+            worldLinkAngularVelocity) = p.getLinkState(boxId, 4, computeLinkVelocity=1, computeForwardKinematics=1)
+    # print(linkWorldPosition)    
+    p.stepSimulation()
+    time.sleep(1.0/240.0)
 #     swing = p.getJointState(boxId, 1)[0]
-#     theta_now , _= _get_joint_state()
-#     orientation_now = normalize(-sum(theta_now))
+    theta_now , _= _get_joint_state()
+    orientation_now = normalize(-sum(theta_now))
+    orientation_velocity = (last_ori-orientation_now)/(1.0/240.0)
 #     # theta1 = p.getJointState(boxId,2)
 #     # theta2 = p.getJointState(boxId,3)
 #     # theta3 = p.getJointState(boxId,4)
@@ -56,38 +64,41 @@ pose = pose_target[-1]
 #     # print(orientation[1], ori)
 #     # o.append(np.array(linkWorldPosition))
 #     # o1.append(ori)
+    last_ori = orientation_now
+    print(orientation_velocity)
+    print(worldLinkLinearVelocity)
 #     print(swing)
-while True:
-    theta = p.getJointState(boxId, 1)[0]
-    error = (np.pi/2 - theta)
-    vel = 0.5*error
-    p.setJointMotorControl2(boxId, 1 , p.VELOCITY_CONTROL, targetVelocity = vel, force=50_000)
-    p.setJointMotorControl2(boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-    p.setJointMotorControl2(boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-    p.setJointMotorControl2(boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-    p.stepSimulation()
-    time.sleep(1.0/240.)
-    (linkWorldPosition, orientation, *_) = p.getLinkState(boxId,4, computeLinkVelocity=1, computeForwardKinematics=1)
-    # print(linkWorldPosition)    
-    p.stepSimulation()
-    time.sleep(1.0/240.)
-    swing = p.getJointState(boxId, 1)[0]
-    theta_now , _= _get_joint_state()
-    print(error)
-    thetat = np.arctan2(linkWorldPosition[1],linkWorldPosition[0])
+# while True:
+#     theta = p.getJointState(boxId, 1)[0]
+#     error = (np.pi/2 - theta)
+#     vel = 0.5*error
+#     p.setJointMotorControl2(boxId, 1 , p.VELOCITY_CONTROL, targetVelocity = vel, force=50_000)
+#     p.setJointMotorControl2(boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#     p.setJointMotorControl2(boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#     p.setJointMotorControl2(boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#     p.stepSimulation()
+#     time.sleep(1.0/240.)
+#     (linkWorldPosition, orientation, *_) = p.getLinkState(boxId,4, computeLinkVelocity=1, computeForwardKinematics=1)
+#     # print(linkWorldPosition)    
+#     p.stepSimulation()
+#     time.sleep(1.0/240.)
+#     swing = p.getJointState(boxId, 1)[0]
+#     theta_now , _= _get_joint_state()
+#     print(error)
+#     thetat = np.arctan2(linkWorldPosition[1],linkWorldPosition[0])
 
-    if(np.pi/2 - theta)<5e-3:
-        p.setJointMotorControl2(boxId, 1 , p.VELOCITY_CONTROL, targetVelocity = 0, force=50_000)
-        p.setJointMotorControl2(boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-        p.setJointMotorControl2(boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-        p.setJointMotorControl2(boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
-        p.stepSimulation()
-        time.sleep(1.0/240.)
-        print(np.pi/2-theta)
-        swing = p.getJointState(boxId, 1)[0]
-        break
+#     if(np.pi/2 - theta)<5e-3:
+#         p.setJointMotorControl2(boxId, 1 , p.VELOCITY_CONTROL, targetVelocity = 0, force=50_000)
+#         p.setJointMotorControl2(boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#         p.setJointMotorControl2(boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#         p.setJointMotorControl2(boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force=250_000)
+#         p.stepSimulation()
+#         time.sleep(1.0/240.)
+#         print(np.pi/2-theta)
+#         swing = p.getJointState(boxId, 1)[0]
+#         break
 
-print(thetat, swing)
+
 # print(np.array(linkWorldPosition))
 # print(linkWorldPosition[0]/np.cos(swing))
 # print(linkWorldPosition[1]/np.sin(swing))

@@ -130,18 +130,18 @@ class ExcaRobo(gym.Env):
                 err = self.rotmat2theta(self.rot_mat(start_position[i])@self.rot_mat(theta_now[i]).T)
                 vel[i] = 0.5*err
 
-            p.setJointMotorControl2(self.boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = vel[0], force= 150_000)
-            p.setJointMotorControl2(self.boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = vel[1], force= 150_000)
-            p.setJointMotorControl2(self.boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = vel[2], force= 150_000)
+            p.setJointMotorControl2(self.boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = vel[0], force= 250_000)
+            p.setJointMotorControl2(self.boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = vel[1], force= 250_000)
+            p.setJointMotorControl2(self.boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = vel[2], force= 250_000)
 
             #Update Simulations
             p.stepSimulation()
             time.sleep(self.dt)
 
             if np.all(abs(theta_now-start_position)<1e-1):
-                p.setJointMotorControl2(self.boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 150_000)
-                p.setJointMotorControl2(self.boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 150_000)
-                p.setJointMotorControl2(self.boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 150_000)
+                p.setJointMotorControl2(self.boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 250_000)
+                p.setJointMotorControl2(self.boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 250_000)
+                p.setJointMotorControl2(self.boxId, 4 , p.VELOCITY_CONTROL, targetVelocity = 0, force= 250_000)
                 p.stepSimulation()
                 time.sleep(self.dt)
                 break
