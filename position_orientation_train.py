@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     log_path = os.path.join('Training', 'Logs', 'Position_orientation')
     model = PPO('MlpPolicy', env, verbose=1, tensorboard_log=log_path)
-    model.learn(total_timesteps=2_500_000, tb_log_name="rew: exp3_obsspace: (11,)", log_interval=1)
+    model.learn(total_timesteps=2_500_000, tb_log_name="rew: all_exp_obsspace: (11,)", log_interval=1)
 
-    model_save_path = os.path.join('Training', 'Saved Models', 'Position_orientation', 'rew: exp3_obsspace: (11,)')
+    model_save_path = os.path.join('Training', 'Saved Models', 'Position_orientation', 'rew: all_exp_obsspace: (11,)')
     model.save(model_save_path)

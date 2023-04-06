@@ -120,7 +120,7 @@ class ExcaRobo(gym.Env):
     def reset(self):
         # Get the random index of targets
         self.idx_target = random.randint(1,self.n_target-1)
-        # self.idx_target = 3
+        # self.idx_target = 5
         self.position_target, self.orientation_target = self.position_targets[self.idx_target], self.orientation_targets[self.idx_target]
 
         #Reset Simulation
@@ -134,7 +134,7 @@ class ExcaRobo(gym.Env):
             theta_now, _ = self._get_joint_state()
             for i in range(3):
                 err = self.rotmat2theta(self.rot_mat(start_position[i])@self.rot_mat(theta_now[i]).T)
-                vel[i] = 2*err
+                vel[i] = 0.5*err
 
             p.setJointMotorControl2(self.boxId, 2 , p.VELOCITY_CONTROL, targetVelocity = vel[0], force= 250_000)
             p.setJointMotorControl2(self.boxId, 3 , p.VELOCITY_CONTROL, targetVelocity = vel[1], force= 250_000)

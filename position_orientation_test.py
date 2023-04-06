@@ -1,7 +1,7 @@
 import pybullet as p
 import numpy as np
 import matplotlib.pyplot as plt
-# from position_orientation2 import ExcaRobo
+# from position_orientation import ExcaRobo
 # from position_orientation2 import ExcaRobo
 from position_orientation_vel import ExcaRobo
 from stable_baselines3 import PPO
@@ -12,7 +12,7 @@ def where_steady(array):
     idx_steady = None
     counter = 0
     for idx, numb in enumerate(array):
-        if np.all(abs(numb) < 0.2):
+        if np.all(abs(numb) < 0.1):
             idx_steady = idx_steady or idx
             counter += 1
         else:
@@ -25,7 +25,7 @@ def where_steady(array):
 
 if __name__ == "__main__":
     env = ExcaRobo(SIM_ON)
-    model = PPO.load('Training/Saved Models/Position_orientation/rew: velocity_tracking obsspace: (22,)', env=env)
+    model = PPO.load('Training/Saved Models/Position_orientation/rew: velocity_tracking_all_exp2 obsspace: (22,)', env=env)
     obs = env.reset()
     score = 0
     done = False
@@ -64,4 +64,4 @@ if __name__ == "__main__":
 
     print(f"steady at episode: {idx_steady}")
     print(f"Score: {score}, with step: {step}, steady_state MSE: {np.sqrt((position_error[idx_steady:,:]**2).mean(axis=0))}")
-    
+    print(f"Orientation RMSE: {np.sqrt(((np.array(orientation_error[idx_steady:]))**2).mean())}")

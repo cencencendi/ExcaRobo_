@@ -75,8 +75,8 @@ class ExcaRobo(gym.Env):
         # desired_linear_velocity = -5*vec
 
         reward_dist = np.exp(-np.linalg.norm(vec))
-        reward_orientation = -0.0075*(orientation_error)**2
-        reward_ctrl = 0
+        reward_orientation = np.exp(-(orientation_error)**2)
+        reward_ctrl = -0.075*(np.linalg.norm(self.last_act-action))
 
         reward = reward_dist + reward_ctrl + reward_orientation
         self.new_obs = self._get_obs(error = vec, 

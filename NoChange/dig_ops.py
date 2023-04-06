@@ -97,7 +97,7 @@ def release_material(env, model, obs, target):
 
 if __name__ == "__main__":
     env = ExcaRobo(render_mode='human')
-    model = PPO.load('../Training/Saved Models/Tuned/1', env=env)
+    model = PPO.load('../Training/Saved Models/Tuned/6', env=env)
     obs = env.reset()
 
     trajectories, theta_swing = get_trajectories()

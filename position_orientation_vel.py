@@ -64,6 +64,7 @@ class ExcaRobo(gym.Env):
         orientation_error = self.rotmat2theta(
             self.rot_mat(self.orientation_target)@self.rot_mat(self.orientation_now).T
         )
+        # desired_orientation_velocity = np.clip(5*orientation_error, -0.9, 0.9)
         desired_orientation_velocity = 5*orientation_error
 
         self.orientation_velocity = (self.orientation_now-self.orientation_last)/self.dt
@@ -74,9 +75,9 @@ class ExcaRobo(gym.Env):
         vec = np.array(self.position_now) - self.position_target
         desired_linear_velocity = -5*vec
 
-        reward_dist = 4*np.exp(-np.linalg.norm(desired_linear_velocity-self.link_velocity))
-        reward_orientation = -np.exp((desired_orientation_velocity-self.orientation_velocity)**2)
-        reward_ctrl = -0.0075*np.linalg.norm(action)
+        reward_dist = np.exp(-np.linalg.norm(desired_linear_velocity-self.link_velocity))
+        reward_orientation = np.exp(-(desired_orientation_velocity-self.orientation_velocity)**2)
+        reward_ctrl = -0.075*np.linalg.norm(self.last_act-action)
 
         reward = reward_dist + reward_ctrl + reward_orientation
         self.new_obs = self._get_obs(desired_orientation_velocity = desired_orientation_velocity, 

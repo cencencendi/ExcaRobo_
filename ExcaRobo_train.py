@@ -13,9 +13,8 @@ if __name__ == "__main__":
                 env = env, 
                 verbose=1, 
                 tensorboard_log=log_path,
-                batch_size= 1024,
-                learning_rate=1e-4)
-    model.learn(total_timesteps=1e7, tb_log_name="bs:1024_lr:1e-4_3000eps", log_interval=1)
+                batch_size= 1024)
+    model.learn(total_timesteps=5e6, tb_log_name="bs:1024", log_interval=1)
 
-    model_save_path = os.path.join('Training', 'Saved Models', 'Tuned', '6')
+    model_save_path = os.path.join('Training', 'Saved Models', 'Tuned', 'bs:1024')
     model.save(model_save_path)

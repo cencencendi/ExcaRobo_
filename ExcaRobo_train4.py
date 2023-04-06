@@ -8,14 +8,10 @@ SIM_ON = 0
 if __name__ == "__main__":
     env = ExcaRobo(SIM_ON)
 
-    log_path = os.path.join('Training', 'Logs', 'End')
-    model = PPO(policy='MlpPolicy', 
-                env = env, 
-                verbose=1, 
-                tensorboard_log=log_path,
-                batch_size= 1024,
-                learning_rate=1e-4)
-    model.learn(total_timesteps=1e7, tb_log_name="bs:1024_lr:1e-4_all_exp_unclipped", log_interval=1)
+    log_path = os.path.join('Training', 'Logs', 'All_Pose')
+    model = PPO('MlpPolicy', env, verbose=1, tensorboard_log=log_path)
+    model.learn(total_timesteps=6_000_000)
 
-    model_save_path = os.path.join('Training', 'Saved Models', 'End', 'bs:1024_lr:1e-4_all_exp_unclipped')
+    model_save_path = os.path.join('Training', 'Saved Models', 'All_Pose', '4_(4)_PPO30')
     model.save(model_save_path)
+    print("Kelar brou")
